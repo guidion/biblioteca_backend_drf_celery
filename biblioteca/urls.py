@@ -3,12 +3,18 @@ Biblioteca URL Configuration
 """
 from django.urls import re_path
 from biblioteca.views import (
+    UserList, UserDetail,
     AuthorList, AuthorDetail,
     PublisherList, PublisherDetail,
     BookList, BookDetail,
 )
 
 app_name = 'biblioteca'
+
+users = [
+  re_path(r'^users/$', UserList.as_view()),
+  re_path(r'^users/(?P<pk>\d+)$', UserDetail.as_view()),
+]
 
 authors = [
   re_path(r'^authors/$', AuthorList.as_view()),
@@ -26,4 +32,4 @@ books = [
 ]
 
 
-urlpatterns = authors + publishers + books
+urlpatterns = users + authors + publishers + books

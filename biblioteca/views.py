@@ -1,7 +1,23 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from biblioteca.serializers import AuthorSerializer, PublisherSerializer, BookSerializer
+from biblioteca.serializers import UserSerializer, AuthorSerializer, PublisherSerializer, BookSerializer
+
+
+class UserList(ListCreateAPIView):
+    serializer_class = UserSerializer
+    model = serializer_class.Meta.model
+    queryset = model.objects.all()
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+
+class UserDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializer
+    model = serializer_class.Meta.model
+    queryset = model.objects.all()
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
 
 class AuthorList(ListCreateAPIView):

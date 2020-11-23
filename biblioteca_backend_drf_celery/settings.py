@@ -163,7 +163,7 @@ REST_FRAMEWORK = {
 # Authentication Backends
 # https://docs.djangoproject.com/es/2.2/topics/auth/customizing/#authentication-backends
 AUTHENTICATION_BACKENDS = [
-    'biblioteca_backend_drf_celery.auth.EmailBackend'
+    'django.contrib.auth.backends.ModelBackend'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = env('CORS_ORIGIN_ALLOW_ALL')
