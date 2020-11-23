@@ -2,7 +2,7 @@
 Biblioteca Serializers
 """
 from django.contrib.auth import get_user_model
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ListField, IntegerField, CharField
 from biblioteca.models import Author, Publisher, Book
 
 
@@ -23,25 +23,14 @@ class UserSerializer(ModelSerializer):
         model = get_user_model()
         fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name')
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'email': {'required': True},
         }
 
 
-class CustomSerializer(ModelSerializer):
-    """
-    Custom Serializer
-    """
-    def create(self, validated_data):
-        """
-        Create and return a new Models instance, given the validated data
-        """
-        # Create main Object
-        main_object = self.__class__.Meta.model.objects.create(**validated_data)  # pylint: disable=no-member
-        # Return object created
-        return main_object
-
-
-class AuthorSerializer(CustomSerializer):
+class AuthorSerializer(ModelSerializer):
     """
     Author serializer
     """
@@ -54,7 +43,20 @@ class AuthorSerializer(CustomSerializer):
         fields = '__all__'
 
 
-class PublisherSerializer(CustomSerializer):
+class AuthorRelatedSerializer(ModelSerializer):
+    """
+    Author serializer
+    """
+
+    class Meta:  # pylint: disable=too-few-public-methods
+        """
+        Serializer Class Meta
+        """
+        model = Author
+        fields = ('id', )
+
+
+class PublisherSerializer(ModelSerializer):
     """
     Publisher serializer
     """
@@ -67,10 +69,12 @@ class PublisherSerializer(CustomSerializer):
         fields = '__all__'
 
 
-class BookSerializer(CustomSerializer):
+class BookSerializer(ModelSerializer):
     """
     Book serializer
     """
+    authors = AuthorSerializer(read_only=True, many=True)
+    authors_registry = CharField(write_only=True)
 
     class Meta:  # pylint: disable=too-few-public-methods
         """
@@ -78,3 +82,38 @@ class BookSerializer(CustomSerializer):
         """
         model = Book
         fields = '__all__'
+
+    def create(self, validated_data):
+        """
+        Create and return a new Models instance, given the validated data
+        """
+        # Create main Object
+        authors_registry = validated_data.pop('authors_registry')
+        authors_registry = [int(author_registry) for author_registry in authors_registry.split(',')]
+        _authors = Author.objects.filter(pk__in=authors_registry)
+        if _authors:
+            book = Book(**validated_data)
+            book.save()
+            for author in _authors:
+                print('Author: ', author)
+                book.authors.add(author)
+            book.save()
+        return book
+
+    def update(self, instance, validated_data):
+        """
+        Update and return a instance, given the validated data
+        """
+        authors_registry = validated_data.pop('authors_registry')
+        authors_registry = [int(author_registry) for author_registry in authors_registry.split(',')]
+        _authors = Author.objects.filter(pk__in=authors_registry)
+        if _authors:
+            pk = instance.id
+            instance.delete()
+            instance = Book(**validated_data, id=pk)
+            instance.save()
+            for author in _authors:
+                print('Author: ', author)
+                instance.authors.add(author)
+            instance.save()
+        return instance
