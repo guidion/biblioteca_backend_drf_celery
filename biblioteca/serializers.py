@@ -4,6 +4,7 @@ Biblioteca Serializers
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ModelSerializer, ListField, IntegerField, CharField
 from biblioteca.models import Author, Publisher, Book
+from biblioteca.tasks import send_email_authors
 
 
 class UserSerializer(ModelSerializer):
@@ -97,7 +98,10 @@ class BookSerializer(ModelSerializer):
             for author in _authors:
                 print('Author: ', author)
                 book.authors.add(author)
-            book.save()
+                book.save()
+                # Enviar mensaje de correo electronico a cada autor
+                print('Correr la tarea')
+                send_email_authors(author=author, book=book)
         return book
 
     def update(self, instance, validated_data):

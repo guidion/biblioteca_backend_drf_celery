@@ -56,13 +56,13 @@ class BookList(ListCreateAPIView):
     serializer_class = BookSerializer
     model = serializer_class.Meta.model
     queryset = model.objects.all()
-    # permission_classes = [IsAuthenticated]
-    # authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
 
 class BookDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = BookSerializer
     model = serializer_class.Meta.model
     queryset = model.objects.all()
-    # permission_classes = [IsAuthenticated]
-    # authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]

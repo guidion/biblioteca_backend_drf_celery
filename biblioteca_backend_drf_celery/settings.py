@@ -54,7 +54,6 @@ THIRD_PARTY_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'django_extensions',
-    'djcelery',
 ]
 
 LOCAL_APPS = [
@@ -168,3 +167,10 @@ AUTHENTICATION_BACKENDS = [
 
 CORS_ORIGIN_ALLOW_ALL = env('CORS_ORIGIN_ALLOW_ALL')
 # CORS_ALLOW_CREDENTIALS = True
+
+# EMAIL_BACKEND = env.str('EMAIL_BACKEND')
+EMAIL_HOST = env.str('EMAIL_HOST')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+EMAIL_PORT = env.int('EMAIL_PORT')
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')
